@@ -42,7 +42,9 @@ int readAndStore(char operation[])
 				character, operation[iterator];
 				iterator++;
 			break;
-
+			case ' ':
+			break;
+			
 			default:
 				printf("Something went wrong :,c\n");
 			break;
