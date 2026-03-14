@@ -18,13 +18,17 @@ The calculator currently supports:
 * Floating point numbers
 * Handling of multiple consecutive signs (for example +-+-+-)
 
-Example of a valid expression:
+Example of a valid expressions:
 
-5*-2+3*4+--+++1*-+-+-985385394/-----++++89+-+-+-+---10
-
+Input:
+12.5 + 3.4 * 2 - 7 / 2
 Output:
+15.8
 
-11071758
+Input:
+5*-2.5+34.12+--+++1.7-+-+-9853.85394/-----++++89.12+-+-+-+---10.5
+Output:
+144.388
 
 ## How it Works
 
