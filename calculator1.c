@@ -18,7 +18,6 @@ int delWhiteSpaces(char operation[]);
 void signOrOperator(char operation[]);
 void negatives(char operation[], double operands[]);
 int operators_array(char operation[], char operators[]);
-int precedence(char operators[], double operands[], int *length_operands);
 int calculator(char operators[], double operands[], int *length_operands);
 int arrayCompression(int iterator, int *length_operands, double operands[], char operators[]);
 
