@@ -37,7 +37,6 @@ int readAndStore(char operation[])
 			case '5': case '6': case '7': case '8': case '9':
 			case '+': case '*': case '-': case '/': case '.':
 				operation[iterator] = character;
-				//printf("The character %c has been read and stored in array as: %c\n",
 				character, operation[iterator];
 				iterator++;
 			break;
