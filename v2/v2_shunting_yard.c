@@ -16,6 +16,7 @@ double createNumber(int numbe[], int* number_length, int* integerDigits);
 int precedence(char operator);
 bool leftAssociative(char operator);
 void operate(char operators[], int *operators_length, double operands[], int *operands_length);
+bool isOperator(char operators[], int index);
 
 //Function definitions
 /**
@@ -72,7 +73,7 @@ double createNumber(int number[], int *number_length,int *integerDigits){
 
 /**
  *	Function that returns the precedence value.
- *	@param operator		character that represents an arithmetic operation		
+ *	@param operator		character that represents an arithmetic operation
  *	@return precedence	the value of priority of an operator (from 1 to 4, being 1 the lowest priority)
  */
 int precedence(char operator){
@@ -84,11 +85,14 @@ int precedence(char operator){
 		case '^':
 			precedence = 3;
 			break;
-		case '*': case '/':
+		case '~': case '`':
 			precedence = 2;
 			break;
-		case '+': case '-':
+		case '*': case '/':
 			precedence = 1;
+			break;
+		case '+': case '-':
+			precedence = 0;
 			break;
 	}
 	return precedence;
@@ -107,7 +111,7 @@ bool leftAssociative(char operator){
 		case '+': case '-':
 			associativity = true;
 			break;
-		case '^':
+		case '^': case '~': case '`':
 			associativity = false;
 			break;
 		default:
@@ -127,67 +131,111 @@ bool leftAssociative(char operator){
 void operate(char operators[], int *operators_length, double operands[], int *operands_length){
 	//The last operand in the operands' array
 	double operand1 = operands[*operands_length-1];
-	
-	//The second last operand in the operands' array
-	double operand2 = operands[*operands_length - 2];
-	
 	//The las character in the operators' array
 	char operation = operators[*operators_length - 1];
-
 	//The result
 	double result = 0;
-
-	//Debug printfs
-	// printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
-	// printf("Operand 2: operands[%d] = %f\n", *operands_length-2, operand2);
-	// printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
-	// printf("==OPERATE FUNCTION==\n");
-	// printf("Operands:\n");
-	// for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
-	// printf("Operators:\n");
-	// for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
+	if(*operands_length -2 >= 0){
+		//The second last operand in the operands' array
+		double operand2 = operands[*operands_length - 2];
+		
+		//Debug printfs
+		printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
+		printf("Operand 2: operands[%d] = %f\n", *operands_length-2, operand2);
+		printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
+		printf("==OPERATE FUNCTION==\n");
+		printf("Operands:\n");
+		for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
+		printf("Operators:\n");
+		for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
 	
-	switch(operation){
-		case '^':
-			/*To define*/
-			break;
-		case '*':
-			result = operand2 * operand1;
-			break;
-		case '/':
-			if(operand1 != 0){
-				result = operand2 / operand1;
-			} else{
-				printf("Division by 0!!\n");
-				//The program shouldn't continue
-			}
-			break;
-		case '+':
-			result = operand2 + operand1;
-			break;
-		case '-':
-			result = operand2 - operand1;
-			break;
-		case '~':
-			/*unary '-'?*/
-			break;
-		default:
-			/*To define*/
-			break;
+		switch(operation){
+			case '^':
+				/*To define*/
+				break;
+			case '*':
+				result = operand2 * operand1;
+				break;
+			case '/':
+				if(operand1 != 0){
+					result = operand2 / operand1;
+				} else{
+					printf("Division by 0!!\n");
+					//The program shouldn't continue
+				}
+				break;
+			case '+':
+				result = operand2 + operand1;
+				break;
+			case '-':
+				result = operand2 - operand1;
+				break;
+			case '~':
+				result = -1 * operand1;
+				break;
+			case '`':
+				result = operand1;
+				break;
+			default:
+				/*To define*/
+				break;
+		}
+		if(operation == '~' || operation == '`'){
+			operands[*operands_length - 1] = result;
+			// printf("Result: operands[%d] = %f\n", *operands_length - 1, result);
+		} else { 
+			operands[*operands_length - 2] = result;
+			// printf("Result: operands[%d] = %f\n", *operands_length - 2, result);
+			*operands_length -= 1;
+		}
+	} else if(*operands_length -1 == 0){
+		//Debug printfs
+		printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
+		printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
+		printf("==OPERATE FUNCTION==\n");
+		printf("Operands:\n");
+		for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
+		printf("Operators:\n");
+		for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
+		switch(operation){
+			case '~':
+				result = -1 * operand1;
+				break;
+			case '`':
+				result = operand1;
+				break;
+			default:
+				/*To define*/
+				break;
+		}
+		operands[*operands_length - 1] = result;
+		// printf("Result: operands[%d] = %f\n", *operands_length - 1, result);
 	}
-	operands[*operands_length - 2] = result;
-	// printf("Result: operands[%d] = %f\n", *operands_length - 2, result);
-	*operands_length -= 1;
 }
 
+bool isOperator(char operators[], int index){
+	switch(operators[index]){
+		case '^':
+			/*To define*/
+		case '*':
+		case '/':
+		case '+':
+		case '-':
+		case '~':
+		case '`':
+			return true;
+		default:
+			return false;
+	}
+}
 
 int main(){
 	int number[17];				/*Array of sigle digits that make up the operand*/
 	int number_length = 0;		/*the length of the number's array*/
-	
+
 	int periods = 0;			/*Amount of periods introduced by the user*/
 	int integerDigits = 0;		/*Number of digits before the floating point*/
-	
+
 	double operands[20];		/*Array of the former operands in double precision*/
 	int operands_length = 0;	/*The length of the operands' array*/
 
@@ -195,72 +243,89 @@ int main(){
 	char operators[20];			/*Array of characters that represent an arithmetic operation*/
 	int operators_length = 0;	/*The length of the oprerator's array*/
 
-	
+
 	printf("Enter an operation:\n");
 	do{
 		character = getchar();
-		switch(character){							
+		switch(character){
 			case '0': case '1': case '2': case '3': case '4':
 			case '5': case '6': case '7': case '8': case '9':
 				number[number_length++] = (int)character - '0';
 				break;
 			case '.':
-				if (periods <= 1){
+				if (periods < 1){ 	//Verifies if the user hasn't entered more than one point
 					periods++;
-					if(number_length > 0){
-						integerDigits = number_length;		
-					} else{
+					if(number_length > 0){ //If there are digits before the point, they'll be the integer part of the calculated number
+						integerDigits = number_length;
+					} else {
 						number[number_length++] = 0;
-						integerDigits = 1;
+						integerDigits++;
 					}
+				} else {
+					fprintf(stderr, "Several floating point detected - Only the first one will be considered");
 				}
 				break;
-			case '+': case '-': case '*': case '/':
+
+			case '-':case '+': 
+			case '*': case '/':
+				if(character == '+'){
+					if((operators_length > 0 && isOperator(operators, operators_length - 1)) || (operators_length == 0 && operands_length == 0 && number_length == 0)){
+						character = '`';
+					}
+				} else if (character == '-'){
+					if((operators_length > 0 && isOperator(operators, operators_length - 1)) || (operators_length == 0 && operands_length == 0 && number_length == 0)){
+						character = '~';
+					}
+				}
+				
 				if(number_length > 0){
-					operands[operands_length++] = createNumber(number, &number_length, &integerDigits);		
+					operands[operands_length++] = createNumber(number, &number_length, &integerDigits);
 					periods = 0;
 				}
-							
 				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					operate(operators, &operators_length, operands, &operands_length);
 					operators_length--;
-				}								
+				}
+
 				operators[operators_length++] = character;
-				
 				break;
+
 			case '\n':
 				if(number_length > 0){
-					operands[operands_length++] = createNumber(number, &number_length, &integerDigits);		
+					operands[operands_length++] = createNumber(number, &number_length, &integerDigits);
 					periods = 0;
 				}
-			
+
 				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
 					operate(operators, &operators_length, operands, &operands_length);
 				}
 				break;
+
 			case '(':
 				operators[operators_length++] = character;
 				break;
+
 			case ')':
 				if(number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits);
 					periods = 0;
 				}
-				
+
 				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
 					operate(operators, &operators_length, operands, &operands_length);
 				}
-				
+
 				if(operators[operators_length - 1] == '('){
 					operators_length--;
 				}
 				break;
+
 			default:
 				/*To define*/
 				break;
 		}
 	}while(character != '\n' && character != EOF);
-		
+
 	printf("%lf\n", operands[0]);
 }
 
