@@ -3,11 +3,13 @@
  * Intento de implementación del algoritmo de Shunting-Yard
  * Inicio: 5/11/2026
  * @author Martina Diez Pisani
- * @version 2.0
+ * @version 2.1
  **/
 
-#include<stdio.h>
-#include<stdbool.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include <time.h>	//In order to compare with version 1.0
+
 
 //Function prototypes/declarations
 long int createInteger(int number[], int length);
@@ -57,18 +59,14 @@ double createFloat(int floatPart,long int number){
  */
 double createNumber(int number[], int *number_length,int *integerDigits){
 	double floatNum;
-	if(*number_length > 0){
-		long int integer = createInteger(number, *number_length);
-		if(*integerDigits > 0){
-			floatNum = createFloat(*number_length - *integerDigits, integer);
-		} else{
-			floatNum = integer;
-		}
-		*number_length = *integerDigits = 0;
-		return floatNum;
+	long int integer = createInteger(number, *number_length);
+	if(*integerDigits > 0){
+		floatNum = createFloat(*number_length - *integerDigits, integer);
 	} else{
-		/*Possible two operators in a row*/
+		floatNum = integer;
 	}
+	*number_length = *integerDigits = 0;
+	return floatNum;
 }
 
 /**
