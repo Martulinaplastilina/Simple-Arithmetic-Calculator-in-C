@@ -131,12 +131,7 @@ bool leftAssociative(char operator){
  *	@return result				the result of the operation between the operands
  */
 double BinaryOperation(char operation, double operand1, double operand2){
-	double result = 0; 									//The result
-	//Debug printfs
-	printf("Operand 1: operands[-] = %f\n", operand1);
-	printf("Operand 2: operands[-] = %f\n", operand2);
-	printf("Operation: operators[-] = %c\n", operation);
-	printf("==OPERATE FUNCTION==\n");
+	double result = 0; 			/* The result */
 	switch(operation){
 		case '^':
 			/*To define*/
@@ -148,7 +143,7 @@ double BinaryOperation(char operation, double operand1, double operand2){
 			if(operand1 != 0){
 				result = operand2 / operand1;
 			} else{
-				printf("Division by 0!!\n");
+				fprintf(stderr, "Division by 0!!\n");
 				//The program shouldn't continue
 			}
 			break;
@@ -174,11 +169,6 @@ double BinaryOperation(char operation, double operand1, double operand2){
  */
 double UnaryOperation(char operation, double operand){
 	double result = 0; 			//The result
-	//Debug printfs
-	printf("Operand 1: operands[-] = %f\n",operand);
-	printf("Operation: operators[-] = %c\n",operation);
-	printf("==OPERATE FUNCTION==\n");
-
 	switch(operation){
 		case '~':
 			result = -1 * operand;
@@ -253,18 +243,20 @@ bool isOperator(char operators[], int index){
 }
 
 int main(){
-	int number[17];				/*Array of sigle digits that make up the operand*/
-	int number_length = 0;		/*the length of the number's array*/
+	int number_size, operands_size, operators_size;
+	number_size = operands_size = operators_size = 20
+	int *number = malloc(number_size * sizeof(int));				/*Array of sigle digits that make up the operand*/
+	int number_length = 0;					/*the length of the number's array*/
 
-	int periods = 0;			/*Amount of periods introduced by the user*/
-	int integerDigits = 0;		/*Number of digits before the floating point*/
+	int periods = 0;						/*Amount of periods introduced by the user*/
+	int integerDigits = 0;					/*Number of digits before the floating point*/
 
-	double operands[20];		/*Array of the former operands in double precision*/
-	int operands_length = 0;	/*The length of the operands' array*/
+	double *operands = malloc(operands_size * sizeof(double));			/*Array of the former operands in double precision*/
+	int operands_length = 0;				/*The length of the operands' array*/
 
-	char character;				/*Character entered by the user*/
-	char operators[20];			/*Array of characters that represent an arithmetic operation*/
-	int operators_length = 0;	/*The length of the oprerator's array*/
+	char character;							/*Character entered by the user*/
+	char *operators = malloc(operators_size * sizeof(char));			/*Array of characters that represent an arithmetic operation*/
+	int operators_length = 0;				/*The length of the oprerator's array*/
 
 
 	printf("Enter an operation:\n");
@@ -285,7 +277,7 @@ int main(){
 						integerDigits++;
 					}
 				} else {
-					fprintf(stderr, "Several floating point detected - Only the first one will be considered");
+					fprintf(stderr, "Several floating point detected - Only the first one will be considered\n");
 				}
 				break;
 
@@ -299,24 +291,32 @@ int main(){
 					}
 				} else {
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
+					if(operands_length == operands_size){
+						operands = realloc(operands, ++operands_size);
+					}
 				}
 				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					operate(operators[operators_length - 1], operands, &operands_length);
 					operators_length--;
+					operators = realloc(operators, operators_length);
 				}
 				operators[operators_length++] = character;
+				if(operators_length == operators_size){
+					operators = realloc(operators, ++operators_size);
+				}
 				break;
 			case '\n': case EOF: case ')':
 				if(number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
+					if(operands_length == operands_size){
+						operands = realloc(operands, ++operands_size);
+					}
 				}
-
-				while((operators_length - 1 > 0 && operators[operators_length - 2] != '(') && (precedence(operators[operators_length - 2]) > precedence(operators[operators_length - 1) || (precedence(operators[operators_length - 2])== precedence(operators[operators_length - 1])&& leftAssociative(operators[operators_length - 1])))){
-					operate(operators[operators_length - 2], operands, &operands_length);
-					operators_length--;
+				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
+					operate(operators[operators_length - 1], operands, &operands_length);
 				}
 				
-				if(operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
+				if(operators_length - 1 >= 0 && operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
 					operators_length--;
 				}
 				break;
