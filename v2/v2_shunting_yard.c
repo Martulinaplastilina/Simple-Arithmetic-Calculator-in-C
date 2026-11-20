@@ -3,7 +3,7 @@
  * Intento de implementación del algoritmo de Shunting-Yard
  * Inicio: 5/11/2026
  * @author Martina Diez Pisani
- * @version 2.1
+ * @version 2.2
  **/
 
 #include <stdio.h>
