@@ -14,13 +14,13 @@
 //Function prototypes/declarations
 long int createInteger(int number[], int length);
 double createFloat(int floatPart, long int number);
-double createNumber(int numbe[], int* number_length, int* integerDigits);
+double createNumber(int number[], int *number_length,int *integerDigits, int *periods);
 int precedence(char operator);
 bool leftAssociative(char operator);
 double BinaryOperation(char operation, double operand1, double operand2);
 double UnaryOperation(char operation, double operand);
 void operate(char operation, double operands[], int *operands_length);
-bool isBinary(char operation)
+bool isBinary(char operation);
 bool isOperator(char operators[], int index);
 
 //Function definitions
@@ -58,6 +58,7 @@ double createFloat(int floatPart,long int number){
  *	@param  number[]		array of sigle digits
  *	@param  *number_length	length of the digits' array
  *	@param	*integerDigits	amount of digits this number has before the point
+ *  @param	*periods		amount of points entered by the user
  *	@return	floatNum		the result float with double precision
  */
 double createNumber(int number[], int *number_length,int *integerDigits, int *periods){
@@ -69,7 +70,7 @@ double createNumber(int number[], int *number_length,int *integerDigits, int *pe
 		} else{
 			floatNum = integer;
 		}
-		*number_length = *integerDigits = *periods = 0;
+		*number_length = *integerDigits = *periods = 0; //reset of the variables after the number creation
 	return floatNum;
 }
 
@@ -125,22 +126,18 @@ bool leftAssociative(char operator){
 
 /**
  *	Calculates the result of an binary operation.
- *	@param operators[]			array of characters that represent an arithmetic operation
- *	@param *operators_length	the length of the operators array
- *	@param operands[]			array of double precision float numbers
- *	@param *operands_length		the length of the operands array
+ *	@param operation			the last operator in the operatiors' array
+ *	@param operand1			 	the last operand in the operands' array
+  *	@param operand2			 	the second last operand in the operands' array
+ *	@return result				the result of the operation between the operands
  */
 double BinaryOperation(char operation, double operand1, double operand2){
 	double result = 0; 									//The result
 	//Debug printfs
-	printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
-	printf("Operand 2: operands[%d] = %f\n", *operands_length-2, operand2);
-	printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
+	printf("Operand 1: operands[-] = %f\n", operand1);
+	printf("Operand 2: operands[-] = %f\n", operand2);
+	printf("Operation: operators[-] = %c\n", operation);
 	printf("==OPERATE FUNCTION==\n");
-	printf("Operands:\n");
-	for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
-	printf("Operators:\n");
-	for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
 	switch(operation){
 		case '^':
 			/*To define*/
@@ -172,10 +169,9 @@ double BinaryOperation(char operation, double operand1, double operand2){
 
 /**
  *	Calculates the result of an unary operation.
- *	@param operators[]			array of characters that represent an arithmetic operation
- *	@param *operators_length	the length of the operators array
- *	@param operands[]			array of double precision float numbers
- *	@param *operands_length		the length of the operands array
+ * 	@param operation			the last operator in the operatiors' array
+ *	@param operand  		 	the last operand in the operands' array
+ *	@return result				the result of the operation on the operand
  */
 double UnaryOperation(char operation, double operand){
 	double result = 0; 			//The result
@@ -201,17 +197,16 @@ double UnaryOperation(char operation, double operand){
 
 /**
  *	Calculates the result of an operation.
- *	@param operators[]			array of characters that represent an arithmetic operation
- *	@param *operators_length	the length of the operators array
+ *	@param operation		    the last operator in the operatiors' array
  *	@param operands[]			array of double precision float numbers
  *	@param *operands_length		the length of the operands array
  */
 void operate(char operation, double operands[], int *operands_length){
 	if(isBinary(operation)){ 
-		operands[*operands_length - 2] = BinaryOperation(operation, operands[operands_length - 1], operands[operands_length - 2]);
-		(*operands_length)--
+		operands[*operands_length - 2] = BinaryOperation(operation, operands[*operands_length - 1], operands[*operands_length - 2]);
+		(*operands_length)--;
 	} else {
-		operands[operands_length - 1] = UnaryOperation(operation, operands[*operands_length - 1]);
+		operands[*operands_length - 1] = UnaryOperation(operation, operands[*operands_length - 1]);
 	}
 }
 
@@ -297,24 +292,19 @@ int main(){
 
 			case '-':case '+': 
 			case '*': case '/':
-				if(character == '+'){
-					if((operators_length > 0 && isOperator(operators, operators_length - 1)) || (operators_length == 0 && operands_length == 0 && number_length == 0)){
+				if(number_length == 0){ //If we haven't read any number yet it's not a binary operator is a inary operator
+					if(character == '+'){
 						character = '`';
-					}
-				} else if (character == '-'){
-					if((operators_length > 0 && isOperator(operators, operators_length - 1)) || (operators_length == 0 && operands_length == 0 && number_length == 0)){
+					} else if (character == '-'){
 						character = '~';
 					}
-				}
-				
-				if(number_length > 0){
+				} else {
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
 				}
 				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					operate(operators[operators_length - 1], operands, &operands_length);
 					operators_length--;
 				}
-
 				operators[operators_length++] = character;
 				break;
 
@@ -341,7 +331,7 @@ int main(){
 					operate(operators[operators_length - 1], operands, &operands_length);
 				}
 
-				if(operators[operators_length - 1] == '('){
+				if(operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
 					operators_length--;
 				}
 				break;
