@@ -120,101 +120,116 @@ bool leftAssociative(char operator){
 }
 
 /**
- *	Calculates the result of a binary operation.
+ *	Calculates the result of an binary operation.
+ *	@param operators[]			array of characters that represent an arithmetic operation
+ *	@param *operators_length	the length of the operators array
+ *	@param operands[]			array of double precision float numbers
+ *	@param *operands_length		the length of the operands array
+ */
+void BinaryOperation(char operators[], int *operators_length, double operands[], int *operands_length){
+	double operand1 = operands[*operands_length-1]; 	//The last operand in the operands' array
+	double operand2 = operands[*operands_length - 2];	//The second last operand in the operands' array
+	char operation = operators[*operators_length - 1];	//The las character in the operators' array
+	double result = 0; 									//The result
+		
+	//Debug printfs
+	printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
+	printf("Operand 2: operands[%d] = %f\n", *operands_length-2, operand2);
+	printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
+	printf("==OPERATE FUNCTION==\n");
+	printf("Operands:\n");
+	for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
+	printf("Operators:\n");
+	for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
+	switch(operation){
+		case '^':
+			/*To define*/
+			break;
+		case '*':
+			result = operand2 * operand1;
+			break;
+		case '/':
+			if(operand1 != 0){
+				result = operand2 / operand1;
+			} else{
+				printf("Division by 0!!\n");
+				//The program shouldn't continue
+			}
+			break;
+		case '+':
+			result = operand2 + operand1;
+			break;
+		case '-':
+			result = operand2 - operand1;
+			break;
+		default:
+			/*To define*/
+			break;
+	}
+	operands[*operands_length - 2] = result;
+	// printf("Result: operands[%d] = %f\n", *operands_length - 2, result);
+	*operands_length -= 1;
+}
+
+
+/**
+ *	Calculates the result of an unary operation.
+ *	@param operators[]			array of characters that represent an arithmetic operation
+ *	@param *operators_length	the length of the operators array
+ *	@param operands[]			array of double precision float numbers
+ *	@param *operands_length		the length of the operands array
+ */
+void UnaryOperation(char operators[], int *operators_length, double operands[], int *operands_length){
+	double operand1 = operands[*operands_length-1]; 	//The last operand in the operands' array
+	char operation = operators[*operators_length - 1];	//The las character in the operators' array
+	double result = 0; 									//The result
+	//Debug printfs
+	printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
+	printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
+	printf("==OPERATE FUNCTION==\n");
+	printf("Operands:\n");
+	for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
+	printf("Operators:\n");
+	for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
+	switch(operation){
+		case '~':
+			result = -1 * operand1;
+			break;
+		case '`':
+			result = operand1;
+			break;
+		default:
+			/*To define*/
+			break;
+	}
+	operands[*operands_length - 1] = result;
+	// printf("Result: operands[%d] = %f\n", *operands_length - 1, result);
+}
+
+/**
+ *	Calculates the result of an operation.
  *	@param operators[]			array of characters that represent an arithmetic operation
  *	@param *operators_length	the length of the operators array
  *	@param operands[]			array of double precision float numbers
  *	@param *operands_length		the length of the operands array
  */
 void operate(char operators[], int *operators_length, double operands[], int *operands_length){
-	//The last operand in the operands' array
-	double operand1 = operands[*operands_length-1];
-	//The las character in the operators' array
-	char operation = operators[*operators_length - 1];
-	//The result
-	double result = 0;
-	if(*operands_length -2 >= 0){
-		//The second last operand in the operands' array
-		double operand2 = operands[*operands_length - 2];
-		
-		//Debug printfs
-		printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
-		printf("Operand 2: operands[%d] = %f\n", *operands_length-2, operand2);
-		printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
-		printf("==OPERATE FUNCTION==\n");
-		printf("Operands:\n");
-		for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
-		printf("Operators:\n");
-		for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
-	
-		switch(operation){
-			case '^':
-				/*To define*/
-				break;
-			case '*':
-				result = operand2 * operand1;
-				break;
-			case '/':
-				if(operand1 != 0){
-					result = operand2 / operand1;
-				} else{
-					printf("Division by 0!!\n");
-					//The program shouldn't continue
-				}
-				break;
-			case '+':
-				result = operand2 + operand1;
-				break;
-			case '-':
-				result = operand2 - operand1;
-				break;
-			case '~':
-				result = -1 * operand1;
-				break;
-			case '`':
-				result = operand1;
-				break;
-			default:
-				/*To define*/
-				break;
-		}
-		if(operation == '~' || operation == '`'){
-			operands[*operands_length - 1] = result;
-			// printf("Result: operands[%d] = %f\n", *operands_length - 1, result);
-		} else { 
-			operands[*operands_length - 2] = result;
-			// printf("Result: operands[%d] = %f\n", *operands_length - 2, result);
-			*operands_length -= 1;
-		}
-	} else if(*operands_length -1 == 0){
-		//Debug printfs
-		printf("Operand 1: operands[%d] = %f\n", *operands_length-1, operand1);
-		printf("Operation: operators[%d] = %c\n", *operators_length - 1, operation);
-		printf("==OPERATE FUNCTION==\n");
-		printf("Operands:\n");
-		for(int i = 0; i < *operands_length; i++) printf("Operand[%d] = %f\n", i, operands[i]);
-		printf("Operators:\n");
-		for(int i = 0; i < *operators_length; i++) printf("Operators[%d] = %c\n", i, operators[i]);
-		switch(operation){
-			case '~':
-				result = -1 * operand1;
-				break;
-			case '`':
-				result = operand1;
-				break;
-			default:
-				/*To define*/
-				break;
-		}
-		operands[*operands_length - 1] = result;
-		// printf("Result: operands[%d] = %f\n", *operands_length - 1, result);
+	if(isBinary(operation)){ //Declare function and change the other can be easier.
+		BinaryOperation(operators, operators_length, operands, operands_length);
+	} else {
+		UnaryOperation(operators, operators_length, operands, operands_length);
 	}
 }
 
+/**
+ * Function that returns whether a character is an operator or not
+ *	@param operators[]			array of characters
+ *	@param index			    index of the characters' array
+ *	@return true if a character is an operator, otherwise false.
+ */
 bool isOperator(char operators[], int index){
 	switch(operators[index]){
 		case '^':
-			/*To define*/
 		case '*':
 		case '/':
 		case '+':
