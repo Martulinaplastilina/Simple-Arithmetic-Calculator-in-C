@@ -311,8 +311,8 @@ int main(){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
 				}
 
-				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
-					operate(operators[operators_length - 1], operands, &operands_length);
+				while((operators_length - 1 > 0 && operators[operators_length - 2] != '(') && (precedence(operators[operators_length - 2]) > precedence(operators[operators_length - 1) || (precedence(operators[operators_length - 2])== precedence(operators[operators_length - 1])&& leftAssociative(operators[operators_length - 1])))){
+					operate(operators[operators_length - 2], operands, &operands_length);
 					operators_length--;
 				}
 				
