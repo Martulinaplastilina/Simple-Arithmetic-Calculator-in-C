@@ -306,35 +306,23 @@ int main(){
 				}
 				operators[operators_length++] = character;
 				break;
-
-			case '\n': case EOF:
+			case '\n': case EOF: case ')':
 				if(number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
 				}
 
-				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
+				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					operate(operators[operators_length - 1], operands, &operands_length);
+					operators_length--;
 				}
-				break;
-
-			case '(':
-				operators[operators_length++] = character;
-				break;
-
-			case ')':
-				if(number_length > 0){
-					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
-				}
-
-				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
-					operate(operators[operators_length - 1], operands, &operands_length);
-				}
-
+				
 				if(operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
 					operators_length--;
 				}
 				break;
-
+			case '(':
+				operators[operators_length++] = character;
+				break;
 			default:
 				/*To define*/
 				break;
