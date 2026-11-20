@@ -8,11 +8,12 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
 #include <time.h>	//In order to compare with version 1.0
 
 
 //Function prototypes/declarations
-long int createInteger(int number[], int length);
+long long int createInteger(int number[], int length);
 double createFloat(int floatPart, long int number);
 double createNumber(int number[], int *number_length,int *integerDigits, int *periods);
 int precedence(char operator);
@@ -30,8 +31,8 @@ bool isOperator(char operators[], int index);
  *	@param length	length of the digits' array
  *	@return integer	result number
  */
-long int createInteger(int number[], int length){
-	long int integer = 0;
+long long int createInteger(int number[], int length){
+	long long int integer = 0;
 	for(int j = 0; j < length; j++){
 		integer *= 10;
 		integer += number[j];
@@ -63,7 +64,7 @@ double createFloat(int floatPart,long int number){
  */
 double createNumber(int number[], int *number_length,int *integerDigits, int *periods){
 	double floatNum;
-	long int integer = createInteger(number, *number_length);
+	long long int integer = createInteger(number, *number_length);
 	if(*integerDigits > 0){
 		floatNum = createFloat(*number_length - *integerDigits, integer);
 	} else{
@@ -193,7 +194,7 @@ double UnaryOperation(char operation, double operand){
 void operate(char operation, double operands[], int *operands_length){
 	if(isBinary(operation)){ 
 		operands[*operands_length - 2] = BinaryOperation(operation, operands[*operands_length - 1], operands[*operands_length - 2]);
-		(*operands_length)--;
+		*operands_length -= 1;
 	} else {
 		operands[*operands_length - 1] = UnaryOperation(operation, operands[*operands_length - 1]);
 	}
@@ -244,7 +245,7 @@ bool isOperator(char operators[], int index){
 
 int main(){
 	int number_size, operands_size, operators_size;
-	number_size = operands_size = operators_size = 20
+	number_size = operands_size = operators_size = 20;
 	int *number = malloc(number_size * sizeof(int));				/*Array of sigle digits that make up the operand*/
 	int number_length = 0;					/*the length of the number's array*/
 
@@ -283,23 +284,30 @@ int main(){
 
 			case '-':case '+': 
 			case '*': case '/':
-				if(number_length == 0){ //If we haven't read any number yet it's not a binary operator is a inary operator
+				if (number_length > 0){
+					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
+					if(operands_length == operands_size){
+						operands = realloc(operands, ++operands_size);
+					}
+				} else if((number_length == 0 && operators_length > 0 && isOperator(operators, operators_length - 1))){ //If we haven't read any number yet it's not a binary operator is a inary operator
 					if(character == '+'){
 						character = '`';
 					} else if (character == '-'){
 						character = '~';
 					}
-				} else {
-					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
-					if(operands_length == operands_size){
-						operands = realloc(operands, ++operands_size);
+				} else if (operands_length == 0){
+					if(character == '+'){
+						character = '`';
+					} else if (character == '-'){
+						character = '~';
 					}
-				}
+				} 
+				
 				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					operate(operators[operators_length - 1], operands, &operands_length);
 					operators_length--;
-					operators = realloc(operators, operators_length);
 				}
+				operators = realloc(operators, operators_length + 1);
 				operators[operators_length++] = character;
 				if(operators_length == operators_size){
 					operators = realloc(operators, ++operators_size);
@@ -312,13 +320,14 @@ int main(){
 						operands = realloc(operands, ++operands_size);
 					}
 				}
-				for(; operators_length > 0 && operators[operators_length - 1] != '('; operators_length--){
+				for(; operators_length > 0 && operators[operators_length - 1] != '(';operators_length--){
 					operate(operators[operators_length - 1], operands, &operands_length);
 				}
 				
 				if(operators_length - 1 >= 0 && operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
 					operators_length--;
 				}
+				operators = realloc(operators, operators_length);
 				break;
 			case '(':
 				operators[operators_length++] = character;
@@ -330,5 +339,8 @@ int main(){
 	}while(character != '\n' && character != EOF);
 
 	printf("%lf\n", operands[0]);
+	free(number);
+	free(operands);
+	free(operators);
 }
 
