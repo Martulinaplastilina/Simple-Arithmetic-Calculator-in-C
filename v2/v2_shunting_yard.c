@@ -307,7 +307,7 @@ int main(){
 				operators[operators_length++] = character;
 				break;
 
-			case '\n':
+			case '\n': case EOF:
 				if(number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
 				}
