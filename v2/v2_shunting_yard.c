@@ -64,13 +64,12 @@ double createFloat(int floatPart,long int number){
 double createNumber(int number[], int *number_length,int *integerDigits, int *periods){
 	double floatNum;
 	long int integer = createInteger(number, *number_length);
-	if(*number_length > 0)
-		if(*integerDigits > 0){
-			floatNum = createFloat(*number_length - *integerDigits, integer);
-		} else{
-			floatNum = integer;
-		}
-		*number_length = *integerDigits = *periods = 0; //reset of the variables after the number creation
+	if(*integerDigits > 0){
+		floatNum = createFloat(*number_length - *integerDigits, integer);
+	} else{
+		floatNum = integer;
+	}
+	*number_length = *integerDigits = *periods = 0; //reset of the variables after the number creation
 	return floatNum;
 }
 
