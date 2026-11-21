@@ -68,9 +68,9 @@ Unlike v1.0—which stored the full expression and ran multiple passes—v2.2 pr
 
 ## Compilation
 
-Compile using gcc (replace shunting.c with your actual filename if different):
+Compile using gcc :
 
-gcc -Wall -Wextra shunting.c -o calculator
+gcc -Wall -Wextra v2_shunting_yard.c -o calculator
 
 ## Execution
 
