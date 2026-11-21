@@ -265,8 +265,10 @@ int main(){
 		character = getchar();
 		printf("Read a character: %c\n", character);
 		printf("So far we have:\n");
-		for(int i = 0; i < operands_length; i++) printf("operands[%d] = %lf\n", operands_length - 1, operands[operands_length - 1]);
-		for(int i = 0; i < operators_length; i++) printf("operators[%d] = %c\n", operators_length - 1, operators[operators_length - 1]);
+		printf("operands array:\n");
+		for(int i = 0; i < operands_length; i++) printf("\toperands[%d] = %lf\n", i, operands[i]);
+		printf("operators array:\n");
+		for(int i = 0; i < operators_length; i++) printf("\toperators[%d] = %c\n", i, operators[i]);
 		switch(character){
 			case '0': case '1': case '2': case '3': case '4':
 			case '5': case '6': case '7': case '8': case '9':
@@ -297,22 +299,25 @@ int main(){
 				printf("\t number_length == 0 -> %d\n", number_length == 0);
 				printf("\t operands_length == 0 -> %d\n", operands_length == 0);
 				printf("\t operators_length == 0 -> %d\n", operators_length == 0);
-				if(operators_length > 0 && isOperator(operators, operators_length - 1) && number_length == 0 && (operands_length == 0 || operators_length == 0)){
-					printf("CHANGE CHARACTER TO UNARY\n");
+				 if (number_length == 0 && operands_length == 0){
+					printf("CHANGE CHARACTER TO UNARY 1\n");
+					 if(character == '+'){
+						character = '`';
+					} else if (character == '-'){
+						character = '~';
+					}
+				}  else if(operators_length > 0 && isOperator(operators, operators_length - 1) && number_length == 0){
+					printf("CHANGE CHARACTER TO UNARY 2\n");
 					if(character == '+'){
 						character = '`';
 					} else if (character == '-'){
 						character = '~';
 					}
 				}
+				if(operators_length > 0 && operators[operators_length - 1] == ')'){
+					operators_length--;
+				}
 				// else if((number_length == 0)){ //If we haven't read any number yet it's not a binary operator is a inary operator
-				// 	if(character == '+'){
-				// 		character = '`';
-				// 	} else if (character == '-'){
-				// 		character = '~';
-				// 	}
-				// } 
-				// else if (number_length == 0 /*&& operators_length >= 0*/){
 				// 	if(character == '+'){
 				// 		character = '`';
 				// 	} else if (character == '-'){
@@ -326,7 +331,7 @@ int main(){
 						operands = realloc(operands, ++operands_size);
 					}
 				} 
-				while((operators_length > 0 && operators[operators_length - 1] != '(') && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
+				while((operators_length > 0 && operators[operators_length - 1] != '(' ) && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
 					printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
 					operate(operators[operators_length - 1], operands, &operands_length);
 					operators_length--;
@@ -345,13 +350,16 @@ int main(){
 						operands = realloc(operands, ++operands_size);
 					}
 				}
+				if(operators_length > 0 && operators[operators_length - 1] == ')'){
+					operators_length--;
+				}
 				for(; operators_length > 0 && operators[operators_length - 1] != '(';operators_length--){
 					printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
 					operate(operators[operators_length - 1], operands, &operands_length);
 				}
 				
-				if(operators_length - 1 >= 0 && operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
-					operators_length--;
+				if(operators_length > 0 && operators[operators_length - 1] == '('){ //If the for has calculated what's between parethesis the las operator would be a closing parenthesis, finally we delete it
+					if(character == ')') operators[operators_length - 1] = character;
 				}
 				operators = realloc(operators, operators_length);
 				break;
