@@ -246,16 +246,16 @@ bool isOperator(char operators[], int index){
 int main(){
 	int number_size, operands_size, operators_size;
 	number_size = operands_size = operators_size = 20;
-	int *number = malloc(number_size * sizeof(int));				/*Array of sigle digits that make up the operand*/
-	int number_length = 0;					/*the length of the number's array*/
+	int *number = malloc(number_size * sizeof(int));			/*Array of sigle digits that make up the operand*/
+	int number_length = 0;										/*the length of the number's array*/
 
-	int periods = 0;						/*Amount of periods introduced by the user*/
-	int integerDigits = 0;					/*Number of digits before the floating point*/
+	int periods = 0;											/*Amount of periods introduced by the user*/
+	int integerDigits = 0;										/*Number of digits before the floating point*/
 
-	double *operands = malloc(operands_size * sizeof(double));			/*Array of the former operands in double precision*/
-	int operands_length = 0;				/*The length of the operands' array*/
+	double *operands = malloc(operands_size * sizeof(double));	/*Array of the former operands in double precision*/
+	int operands_length = 0;									/*The length of the operands' array*/
 
-	char character;							/*Character entered by the user*/
+	char character;												/*Character entered by the user*/
 	char *operators = malloc(operators_size * sizeof(char));			/*Array of characters that represent an arithmetic operation*/
 	int operators_length = 0;				/*The length of the oprerator's array*/
 
@@ -263,12 +263,12 @@ int main(){
 	//printf("Enter an operation:\n");
 	do{
 		character = getchar();
-		printf("Read a character: %c\n", character);
-		printf("So far we have:\n");
-		printf("operands array:\n");
-		for(int i = 0; i < operands_length; i++) printf("\toperands[%d] = %lf\n", i, operands[i]);
-		printf("operators array:\n");
-		for(int i = 0; i < operators_length; i++) printf("\toperators[%d] = %c\n", i, operators[i]);
+		// printf("Read a character: %c\n", character);
+		// printf("So far we have:\n");
+		// printf("operands array:\n");
+		// for(int i = 0; i < operands_length; i++) printf("\toperands[%d] = %lf\n", i, operands[i]);
+		// printf("operators array:\n");
+		// for(int i = 0; i < operators_length; i++) printf("\toperators[%d] = %c\n", i, operators[i]);
 		switch(character){
 			case '0': case '1': case '2': case '3': case '4':
 			case '5': case '6': case '7': case '8': case '9':
@@ -291,23 +291,23 @@ int main(){
 			case '-':case '+': 
 			case '*': case '/':
 				
-				printf("For the operators[%d] = %c ---Not yet stored just representation\n", operators_length, character);
-				printf("\tHas this situation:\n");
-				printf("\t operators_length > 0 -> %d\n", operators_length > 0);
-				if(operators_length > 0)
-				printf("\t isOperator(operators, operators_length - 1) -> %d\n", isOperator(operators, operators_length - 1));
-				printf("\t number_length == 0 -> %d\n", number_length == 0);
-				printf("\t operands_length == 0 -> %d\n", operands_length == 0);
-				printf("\t operators_length == 0 -> %d\n", operators_length == 0);
+				// printf("For the operators[%d] = %c ---Not yet stored just representation\n", operators_length, character);
+				// printf("\tHas this situation:\n");
+				// printf("\t operators_length > 0 -> %d\n", operators_length > 0);
+				// if(operators_length > 0)
+				// printf("\t isOperator(operators, operators_length - 1) -> %d\n", isOperator(operators, operators_length - 1));
+				// printf("\t number_length == 0 -> %d\n", number_length == 0);
+				// printf("\t operands_length == 0 -> %d\n", operands_length == 0);
+				// printf("\t operators_length == 0 -> %d\n", operators_length == 0);
 				 if (number_length == 0 && operands_length == 0){
-					printf("CHANGE CHARACTER TO UNARY 1\n");
+					// printf("CHANGE CHARACTER TO UNARY 1\n");
 					 if(character == '+'){
 						character = '`';
 					} else if (character == '-'){
 						character = '~';
 					}
 				}  else if(operators_length > 0 && isOperator(operators, operators_length - 1) && number_length == 0){
-					printf("CHANGE CHARACTER TO UNARY 2\n");
+					// printf("CHANGE CHARACTER TO UNARY 2\n");
 					if(character == '+'){
 						character = '`';
 					} else if (character == '-'){
@@ -317,22 +317,16 @@ int main(){
 				if(operators_length > 0 && operators[operators_length - 1] == ')'){
 					operators_length--;
 				}
-				// else if((number_length == 0)){ //If we haven't read any number yet it's not a binary operator is a inary operator
-				// 	if(character == '+'){
-				// 		character = '`';
-				// 	} else if (character == '-'){
-				// 		character = '~';
-				// 	}
-				// } 
+			
 				if (number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
-					printf("number created: operands[%d] = %lf\n", operands_length - 1, operands[operands_length - 1]);
+					// printf("number created: operands[%d] = %lf\n", operands_length - 1, operands[operands_length - 1]);
 					if(operands_length == operands_size){
 						operands = realloc(operands, ++operands_size);
 					}
 				} 
 				while((operators_length > 0 && operators[operators_length - 1] != '(' ) && (precedence(operators[operators_length - 1]) > precedence(character) || (precedence(operators[operators_length - 1])== precedence(character)&& leftAssociative(character)))){
-					printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
+					// printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
 					operate(operators[operators_length - 1], operands, &operands_length);
 					operators_length--;
 				}
@@ -345,7 +339,7 @@ int main(){
 			case '\n': case EOF: case ')':
 				if(number_length > 0){
 					operands[operands_length++] = createNumber(number, &number_length, &integerDigits, &periods);
-					printf("number created: operands[%d] = %lf\n", operands_length - 1, operands[operands_length - 1]);
+					// printf("number created: operands[%d] = %lf\n", operands_length - 1, operands[operands_length - 1]);
 					if(operands_length == operands_size){
 						operands = realloc(operands, ++operands_size);
 					}
@@ -354,7 +348,7 @@ int main(){
 					operators_length--;
 				}
 				for(; operators_length > 0 && operators[operators_length - 1] != '(';operators_length--){
-					printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
+					// printf("Operation to be done: operators[%d] = %c\n", operators_length -1, operators[operators_length - 1]);
 					operate(operators[operators_length - 1], operands, &operands_length);
 				}
 				
